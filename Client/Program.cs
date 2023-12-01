@@ -11,8 +11,13 @@ namespace Client
         static void Main(string[] args)
         {
             SentMessage sentMessage = new SentMessage();
+            Console.WriteLine("Введите ваше имя: ");
 
-            sentMessage.SentMessageClient("Aleksandr", "127.0.0.1");
+
+                string nameClient = Console.ReadLine();
+                sentMessage.SentMessageClient(nameClient, "127.0.0.1");
+
+
         }
     }
 }

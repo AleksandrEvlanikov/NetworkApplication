@@ -11,7 +11,7 @@ namespace Server
         static void Main(string[] args)
         {
             ServerProg serverProg = new ServerProg();
-            serverProg.Server("Hello");
+            serverProg.HandleClient("Hello");
         }
 
         //public void task1()

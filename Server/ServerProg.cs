@@ -9,17 +9,24 @@ using System.IO;
 
 namespace Server
 {
+
     public class ServerProg
     {
-        public void Server(string name)
+        private bool exitServer = true;
+        UdpClient udpClient = new UdpClient(12345);
+        IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Any, 0);
+
+
+
+        public void HandleClient(string name)
         {
-            UdpClient udpClient = new UdpClient(12345);
-            IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Any, 0);
+
 
             Console.WriteLine("Сервер ждет сообщение от клиента");
 
-            while (true)
+            while (exitServer)
             {
+
                 byte[] buffer = udpClient.Receive(ref iPEndPoint);
                 //if (buffer == null) break;
                 var messageText = Encoding.UTF8.GetString(buffer);
@@ -27,8 +34,20 @@ namespace Server
                 Message message = Message.DeserializeFromJson(messageText);
                 message.Print();
 
-                byte[] responseBytes = Encoding.UTF8.GetBytes($"Ваше сообщение | {message.Text} | доставлено");
-                udpClient.Send(responseBytes, responseBytes.Length, iPEndPoint);
+                if (message.Text == "Exit")
+                {
+                    byte[] responseBytesExit = Encoding.UTF8.GetBytes($"Ваше сообщение | {message.Text} | запрещено, сервер выключается. ");
+                    udpClient.Send(responseBytesExit, responseBytesExit.Length, iPEndPoint);
+                    exitServer = false;
+                    
+                }
+                else
+                {
+                    byte[] responseBytes = Encoding.UTF8.GetBytes($"Ваше сообщение | {message.Text} | доставлено");
+                    udpClient.Send(responseBytes, responseBytes.Length, iPEndPoint);
+                }
+
+
 
 
             }
