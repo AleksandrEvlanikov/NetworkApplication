@@ -12,9 +12,10 @@ namespace Server
 
     public class ServerProg
     {
-        UdpClient udpClient = new UdpClient(12345);
-        IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Any, 0);
+        protected UdpClient udpClient = new UdpClient(12345);
+        protected IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Any, 0);
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        protected List<Message> messagesList = new List<Message>();
         public void HandleClient(string name)
         {
             Console.WriteLine("Сервер ждет сообщение от клиента");
@@ -28,23 +29,24 @@ namespace Server
 
                 Message message = Message.DeserializeFromJson(messageText);
                 message.Print();
+                HandleMessage(message, iPEndPoint);
 
-                if (message.Text == "Exit")
-                {
-                    byte[] responseBytesExit = Encoding.UTF8.GetBytes($"Ваше сообщение | {message.Text} | запрещено, сервер выключается. ");
-                    udpClient.Send(responseBytesExit, responseBytesExit.Length, iPEndPoint);
-                    cancellationTokenSource.Cancel();
+            }
+        }
+        protected virtual void HandleMessage(Message message, IPEndPoint remoteEndPoint)
+        {
+            if (message.Text == "Exit")
+            {
+                byte[] responseBytesExit = Encoding.UTF8.GetBytes($"Ваше сообщение | {message.Text} | запрещено, сервер выключается. ");
+                udpClient.Send(responseBytesExit, responseBytesExit.Length, remoteEndPoint);
+                cancellationTokenSource.Cancel();
+                udpClient.Close();
 
-                }
-                else
-                {
-                    byte[] responseBytes = Encoding.UTF8.GetBytes($"Ваше сообщение | {message.Text} | доставлено");
-                    udpClient.Send(responseBytes, responseBytes.Length, iPEndPoint);
-                }
-
-
-
-
+            }
+            else
+            {
+                byte[] responseBytes = Encoding.UTF8.GetBytes($"Ваше сообщение | {message.Text} | доставлено");
+                udpClient.Send(responseBytes, responseBytes.Length, remoteEndPoint);
             }
         }
     }

@@ -10,8 +10,12 @@ namespace Server
     {
         static void Main(string[] args)
         {
-            ServerProg serverProg = new ServerProg();
-            serverProg.HandleClient("Hello");
+            //ServerProg serverProg = new ServerProg();
+            //serverProg.HandleClient("Hello");
+
+            CustomServerProg serverProgCustom = new CustomServerProg();
+            serverProgCustom.HandleClient("Hello");
+
         }
 
         //public void task1()
