@@ -12,19 +12,14 @@ namespace Server
 
     public class ServerProg
     {
-        private bool exitServer = true;
         UdpClient udpClient = new UdpClient(12345);
         IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Any, 0);
-
-
-
+        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         public void HandleClient(string name)
         {
-
-
             Console.WriteLine("Сервер ждет сообщение от клиента");
 
-            while (exitServer)
+            while (!cancellationTokenSource.IsCancellationRequested)
             {
 
                 byte[] buffer = udpClient.Receive(ref iPEndPoint);
@@ -38,8 +33,8 @@ namespace Server
                 {
                     byte[] responseBytesExit = Encoding.UTF8.GetBytes($"Ваше сообщение | {message.Text} | запрещено, сервер выключается. ");
                     udpClient.Send(responseBytesExit, responseBytesExit.Length, iPEndPoint);
-                    exitServer = false;
-                    
+                    cancellationTokenSource.Cancel();
+
                 }
                 else
                 {
