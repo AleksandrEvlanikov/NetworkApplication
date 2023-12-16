@@ -13,6 +13,9 @@ namespace Server
         public DateTime DateTime { get; set; }
         public string NicknameFrom { get; set; }
         public string NicknameTo { get; set; }
+       public int countMessage { get; set; }
+
+
 
         public string SerializeMessageToJson() => JsonSerializer.Serialize(this);
         public static Message? DeserializeFromJson(string message) => JsonSerializer.Deserialize<Message>(message);
