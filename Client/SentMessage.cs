@@ -11,7 +11,7 @@ namespace Client
 {
     public class SentMessage
     {
-        public void SentMessageClient(string From, string ip)
+        public async Task SentMessageClient(string From, string ip)
         {
 
             UdpClient udpClient = new UdpClient();
@@ -31,7 +31,7 @@ namespace Client
                     {
                         Console.WriteLine("Сообщение отправлено.");
                     }
-                    Thread.Sleep(1000);
+                    await Task.Delay(2000);
 
                 }
                 while (string.IsNullOrEmpty(messageText));
@@ -40,8 +40,11 @@ namespace Client
                 string json = message.SerializeMessageToJson();
 
                 byte[] data = Encoding.UTF8.GetBytes(json);
-                udpClient.Send(data, data.Length, iPEndPoint);
+                await udpClient.SendAsync(data, data.Length, iPEndPoint);
 
+                 
+                //UdpReceiveResult receiveResult = await udpClient.ReceiveAsync();
+                //byte[] buffer = receiveResult.Buffer;
                 byte[] responseBytes = udpClient.Receive(ref iPEndPoint);
                 string responseMessage = Encoding.UTF8.GetString(responseBytes);
                 Console.WriteLine($"Ответ от сервера: {responseMessage}");

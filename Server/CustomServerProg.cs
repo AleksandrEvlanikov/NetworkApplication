@@ -10,13 +10,19 @@ namespace Server
 {
     internal class CustomServerProg : ServerProg
     {
-        protected override void HandleMessage(Message message, IPEndPoint remoteEndPoint)
+        protected override async Task HandleMessageAsync(Message message, IPEndPoint remoteEndPoint)
         {
             messagesList.Add(message);
             Console.WriteLine($"Сообщение || {message} || добавлено в лист.");
-            base.HandleMessage(message, remoteEndPoint);
+
+            await base.HandleMessageAsync(message, remoteEndPoint);
+
+            await Task.WhenAll();
+
+            await Task.Delay(1500);
         }
     }
+
 
 }
 

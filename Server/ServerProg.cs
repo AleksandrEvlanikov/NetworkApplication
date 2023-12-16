@@ -16,29 +16,40 @@ namespace Server
         protected IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Any, 0);
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         protected List<Message> messagesList = new List<Message>();
-        public void HandleClient(string name)
+        public async Task HandleClientAsync(string name)
         {
             Console.WriteLine("Сервер ждет сообщение от клиента");
 
             while (!cancellationTokenSource.IsCancellationRequested)
             {
+                try
+                {
 
-                byte[] buffer = udpClient.Receive(ref iPEndPoint);
-                //if (buffer == null) break;
-                var messageText = Encoding.UTF8.GetString(buffer);
 
-                Message message = Message.DeserializeFromJson(messageText);
-                message.Print();
-                HandleMessage(message, iPEndPoint);
+                    //UdpReceiveResult receiveResult = await udpClient.ReceiveAsync();
+                    //byte[] buffer = receiveResult.Buffer;
+                    byte[] buffer = udpClient.Receive(ref iPEndPoint);
 
+                    var messageText = Encoding.UTF8.GetString(buffer);
+
+                    Message message = Message.DeserializeFromJson(messageText);
+                    message.Print();
+                    await HandleMessageAsync(message, iPEndPoint);
+
+                }
+                catch (SocketException ex)
+                {
+                    Console.WriteLine($"SocketException: {ex.SocketErrorCode}");
+                    Console.WriteLine($"Message: {ex.Message}");
+                }
             }
         }
-        protected virtual void HandleMessage(Message message, IPEndPoint remoteEndPoint)
+        protected virtual async Task HandleMessageAsync(Message message, IPEndPoint remoteEndPoint)
         {
             if (message.Text == "Exit")
             {
                 byte[] responseBytesExit = Encoding.UTF8.GetBytes($"Ваше сообщение | {message.Text} | запрещено, сервер выключается. ");
-                udpClient.Send(responseBytesExit, responseBytesExit.Length, remoteEndPoint);
+                await udpClient.SendAsync(responseBytesExit, responseBytesExit.Length, remoteEndPoint);
                 cancellationTokenSource.Cancel();
                 udpClient.Close();
 
@@ -46,7 +57,9 @@ namespace Server
             else
             {
                 byte[] responseBytes = Encoding.UTF8.GetBytes($"Ваше сообщение | {message.Text} | доставлено");
-                udpClient.Send(responseBytes, responseBytes.Length, remoteEndPoint);
+                await udpClient.SendAsync(responseBytes, responseBytes.Length, remoteEndPoint);
+                //await Task.Delay(3000);
+
             }
         }
     }

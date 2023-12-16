@@ -8,14 +8,15 @@ namespace Server
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            //ServerProg serverProg = new ServerProg();
-            //serverProg.HandleClient("Hello");
-
+            
             CustomServerProg serverProgCustom = new CustomServerProg();
-            serverProgCustom.HandleClient("Hello");
-
+            await Task.Run(() => serverProgCustom.HandleClientAsync(""));
+            //Task task = serverProgCustom.HandleClientAsync("");
+            //await Task.WhenAll(task, Task.Delay(1000));
+            
+            
         }
 
         //public void task1()

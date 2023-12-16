@@ -8,14 +8,14 @@ namespace Client
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             SentMessage sentMessage = new SentMessage();
             Console.WriteLine("Введите ваше имя: ");
 
 
-                string nameClient = Console.ReadLine();
-                sentMessage.SentMessageClient(nameClient, "127.0.0.1");
+            string nameClient = Console.ReadLine();
+            await Task.Run(() => sentMessage.SentMessageClient(nameClient, "127.0.0.1"));
 
 
         }
