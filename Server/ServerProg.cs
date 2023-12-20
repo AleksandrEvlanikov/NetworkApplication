@@ -13,7 +13,9 @@ namespace Server
     public class ServerProg
     {
         protected UdpClient udpClient = new UdpClient(12345);
-        protected IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Any, 0);
+        protected IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 0);
+        public IPAddress GetServerIPAddress() => iPEndPoint.Address;
+
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         protected List<Message> messagesList = new List<Message>();
         public async Task HandleClientAsync(string name)
@@ -51,7 +53,7 @@ namespace Server
                 byte[] responseBytesExit = Encoding.UTF8.GetBytes($"Ваше сообщение | {message.Text} | запрещено, сервер выключается. ");
                 await udpClient.SendAsync(responseBytesExit, responseBytesExit.Length, remoteEndPoint);
                 cancellationTokenSource.Cancel();
-                udpClient.Close();
+                ExitServer();
 
             }
             else
@@ -61,6 +63,11 @@ namespace Server
                 //await Task.Delay(3000);
 
             }
+        }
+
+        public void ExitServer()
+        {
+            udpClient.Close();
         }
     }
 }

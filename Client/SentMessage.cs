@@ -12,12 +12,16 @@ namespace Client
     public class SentMessage
     {
         private int id = 1;
-        public async Task SentMessageClient(string From, string ip)
+        private UdpClient udpClient;
+        private IPEndPoint iPEndPoint;
+        public IPAddress GetClientIPAddress() => iPEndPoint.Address;
+        public SentMessage()
         {
-
-            UdpClient udpClient = new UdpClient();
-            IPEndPoint iPEndPoint = new IPEndPoint(IPAddress.Parse(ip), 12345);
-
+            iPEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12345);
+            udpClient = new UdpClient();
+        }
+        public async Task SentMessageClient(string From)
+        {
 
             while (true)
             {
@@ -59,6 +63,23 @@ namespace Client
                 Console.WriteLine($"Ответ от сервера: {responseMessage}");
             }
 
+        }
+
+        public void ExitClient()
+        {
+            udpClient.Close();
+        }
+
+        public bool IsUdpClientClosed()
+        {
+            try
+            {
+                return udpClient.Client == null;
+            }
+            catch (ObjectDisposedException)
+            {
+                return true;
+            }
         }
     }
 }

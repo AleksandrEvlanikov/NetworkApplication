@@ -15,7 +15,7 @@ namespace Client
 
 
             string nameClient = Console.ReadLine();
-            await Task.Run(() => sentMessage.SentMessageClient(nameClient, "127.0.0.1"));
+            await Task.Run(() => sentMessage.SentMessageClient(nameClient));
 
 
         }
